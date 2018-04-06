@@ -1,0 +1,114 @@
+%YAML 1.2
+---
+# See http://www.sublimetext.com/docs/3/syntax.html
+file_extensions:
+  - inp
+  - i
+scope: mcnp.inp
+
+contexts:
+  # The prototype context is prepended to all contexts but those setting
+  # meta_include_prototype: false.
+  prototype:
+    - include: comments
+
+  main:
+
+    - include: comments
+    - include: cards
+
+  cards:
+    - match: ""
+      push: "Packages/HTML/HTML.sublime-syntax"
+      with_prototype:
+        - match: "--Begin Cells--"
+          push: expr_cells
+        - match: "--Begin Surfaces--"
+          push: expr_surfaces
+        - match: "--Begin Options--"
+          push: expr_options
+
+  expr_cells:
+    - match: ^\n
+      pop: true
+    #- match: \b(?i)imp:n,p=[0-9]\.?[0-9]*1?\s
+    #  scope: keyword.import
+    - match: ^[0-9]*4?
+      scope: storage.type.class.python
+    - match: ([1-9][0-9]*1?)\s(\-[0-9][0-9]*1?\.[0-9]*1?)
+      scope: entity.name.python
+    - match: \s\s0\s\s
+      scope: entity.name.python
+    - match: \s\#\(.*1?\)\s
+      scope: keyword.import
+    - match: \#[1-9][0-9]*1?
+      scope: keyword.import
+    - match: \b(?i)(mat|imp:n,p|imp:n|imp:p|lat|u|fill|vol|tmp|trcl)
+      scope: variable.language.python
+    - match: =[0-9]*1?\.?[0-9]*1?\b
+      scope: string.quoted.single.ruby
+    - match: =(..*1?)\b
+      scope: string.quoted.single.ruby
+    - match: \t
+      scope: invalid.illegal.expected-parameter.python
+    - match: ":"
+      scope: keyword.import
+    - match: \(|\)
+      scope: source.python meta.function.parameters.default-value.python constant.language.python
+    
+    #- match: \:
+    #  scope: function:language:python
+    # - match: \s\s[1-9][0-9]*1?\s\s
+    #   scope: entity.name.python
+    # - match: \s\s\-[1-9][0-9]*1?\s\s
+    #   scope: keyword.control
+  
+  expr_surfaces:
+    - match: ^\n
+      pop: true
+    - match: ^[0-9]*4?
+      scope: entity.name.python
+    - match: \b(?i)[a-z]/?[a-z]*1?
+      scope: variable.language.python
+
+  expr_options:
+    - match: ^\n
+      pop: true
+    - match: ^m[a-z]*1?[1-9][0-9]*1?
+      scope: entity.name.python
+    - match: ^(?i)kcode|^burn|ssw|tr[1-9][0-9]*1?
+      scope: variable.language.python
+    - match: ^(sdef|si|sp)
+      scope: keyword.import
+    - match: ^(f|fmesh)[0-9][0-9]*1?
+      scope: storage.type.class.python
+    - match: ^(fs|fm|sd|c|e|fc)[0-9][0-9]*1?
+      scope: string.quoted.single.ruby
+    - match: "{"
+      scope: keyword.import
+    - match: "}"
+      scope: keyword.import
+
+  comments:
+    # Comments begin with a 'c' and finish at the end of the line.
+    - match: '\$'
+      scope: punctuation.definition.comment.example-c
+      push:
+        # This is an anonymous context push for brevity.
+        - meta_scope: comment.line
+        - match: $\n?
+          pop: true
+    - match: ^c 
+      scope: punctuation.definition.comment.example-c
+      push:
+        # This is an anonymous context push for brevity.
+        - meta_scope: comment.line
+        - match: $\n?
+          pop: true
+    - match: 'c\n'
+      scope: punctuation.definition.comment.example-c
+      push:
+        # This is an anonymous context push for brevity.
+        - meta_scope: comment.line
+        - match: $\n?
+          pop: true
